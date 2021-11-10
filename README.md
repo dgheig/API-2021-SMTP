@@ -1,5 +1,7 @@
 # API-2021-SMTP
 
+⚠️ Please clone [our own fork of MockMock server](https://github.com/HEIGVD-Course-API/MockMock) instead of the official one, because we resolved an issues with a dependency (see this [pull request](https://github.com/tweakers/MockMock/pull/8) if you want to have more information).
+
 ## Objectives
 
 In this lab, you will develop a client application (TCP) in Java. This client application will use the Socket API to communicate with an SMTP server. The code that you write will include a **partial implementation of the SMTP protocol**. These are the objectives of the lab:
@@ -55,7 +57,7 @@ Your report MUST include the following sections:
 
 ## References
 
-* [MockMock server](<https://github.com/tweakers/MockMock>) on GitHub. **Pay attention to this [pull request](https://github.com/tweakers/MockMock/pull/8). While it has not been merged, it will give you the solution to compile the project on your machine.**
+* [Here is our fork of MockMock server](https://github.com/HEIGVD-Course-API/MockMock), in which we resolved an issues with a dependency (see this [pull request](https://github.com/tweakers/MockMock/pull/8) if you want to have more information).
 * The [mailtrap](<https://mailtrap.io/>) online service for testing SMTP
 * The [SMTP RFC](<https://tools.ietf.org/html/rfc5321#appendix-D>), and in particular the [example scenario](<https://tools.ietf.org/html/rfc5321#appendix-D>)
 * Testing SMTP with TLS: `openssl s_client -connect smtp.mailtrap.io:2525 -starttls smtp -crlf`
