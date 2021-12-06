@@ -52,7 +52,7 @@ Your report MUST include the following sections:
 
 * **A brief description of your project**: if people exploring GitHub find your repo, without a prior knowledge of the API course, they should be able to understand what your repo is all about and whether they should look at it more closely.
 
-* **A description of the purpose of MockMock (or any other mock SMTP server you decided to use)
+* **"What is MockMock?" (or any other mock SMTP server you decided to use)**
 
 * **Instructions for setting up your mock SMTP server (with Docker - which you will learn all about in the next 2 weeks)**. The user who wants to experiment with your tool but does not really want to send pranks immediately should be able to use a mock SMTP server. For people who are not familiar with this concept, explain it to them in simple terms. Explain which mock server you have used and how you have set it up.
 
