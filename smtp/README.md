@@ -23,6 +23,30 @@ mvn clean compile assembly:single
 ### Run
 
 ```bash
-sudo java -jar target/SMTPServer-1.0-jar-with-dependencies.jar
+sudo java -jar target/SMTPServer.jar
+```
+
+
+
+## Docker
+
+### Build image
+
+```bash
+docker build -t res-smtpserver .
+```
+
+### Run it standalone
+
+```bash
+docker run --name smtp res-smtpserver
+```
+
+Nb: add `-d` option to run it in the background
+
+To get its ip address:
+
+```bash
+docker inspect smtp -f '{{.NetworkSettings.IPAddress}}'
 ```
 
