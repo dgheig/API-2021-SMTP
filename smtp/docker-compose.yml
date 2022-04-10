@@ -1,0 +1,25 @@
+version: '3'
+services:
+
+  smtp:
+    build: .
+    image: res-smtp
+    networks:
+      default:
+      smtp:
+        ipv4_address: 192.168.250.2
+
+  mockmock:
+    build: ./mockmock
+    image: res-mockmock
+    networks:
+      smtp:
+        ipv4_address: 192.168.250.3
+
+networks:
+  smtp:
+    driver: "bridge"
+    name: smtp
+    ipam:
+      config:
+        - subnet: 192.168.250.0/24
