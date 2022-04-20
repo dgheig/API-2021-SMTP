@@ -15,13 +15,13 @@ public class ServerWorker implements Runnable {
     private final static Logger LOG = Logger.getLogger(ServerWorker.class.getName());
     private Socket socket;
 
-    private List<String> options = new ArrayList<>(String[]{
-            "foo.com greets bar.com",
-            "8BITMIME",
-            "SIZE",
-            "DSN",
-            "HELP"
-    });
+//    private List<String> options = new ArrayList<>(String[]{
+//            "foo.com greets bar.com",
+//            "8BITMIME",
+//            "SIZE",
+//            "DSN",
+//            "HELP"
+//    });
 
     /**
      * Instantiation of a new worker mapped to a socket
