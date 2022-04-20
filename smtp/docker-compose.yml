@@ -2,7 +2,7 @@ version: '3'
 services:
 
   smtp:
-    build: .
+    build: ./server
     image: res-smtp
     networks:
       default:
