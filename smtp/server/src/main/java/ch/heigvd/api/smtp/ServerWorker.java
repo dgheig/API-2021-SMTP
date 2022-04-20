@@ -1,5 +1,6 @@
 package ch.heigvd.api.smtp;
 
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class ServerWorker implements Runnable {
     private final static String SERVER_NAME = "foo.com";
     private final static Logger LOG = Logger.getLogger(ServerWorker.class.getName());
     private Socket socket;
+    private Boolean isRunning = true;
 
     private Mail mail;
     private String line;
@@ -24,8 +26,8 @@ public class ServerWorker implements Runnable {
     private PrintWriter out;
 
     private List<String> options = new ArrayList<>(Arrays.asList(
-            "8BITMIME",
-            "SIZE",
+            // "8BITMIME",
+            // "SIZE",
             "DSN",
             "HELP"
     ));
@@ -87,7 +89,7 @@ public class ServerWorker implements Runnable {
 
             out.println("220 " + SERVER_NAME + " Simple Mail Transfer Service Ready");
             out.flush();
-            while(true) {
+            while(isRunning) {
                 line = in.readLine();
                 if(line == null)
                     return;
@@ -103,7 +105,7 @@ public class ServerWorker implements Runnable {
 
     }
 
-    private void dispatch() {
+    private void dispatch() throws IOException {
         if(line.startsWith("EHLO")) {
             EHLO();
         }
@@ -131,15 +133,20 @@ public class ServerWorker implements Runnable {
         else if(line.startsWith("VRFY")) {
             VRFY();
         }
+        else if(line.startsWith("HELP")) {
+            HELP();
+        }
         else {  // Invalid code
 
         }
     }
 
     private void EHLO() {
-        String tmp = line.substring(5);
-        out.println(SERVER_NAME + " greets " + tmp);
-        out.flush();
+        String name = Utils.substring(line, 5);
+        if(name != null) {
+            out.println(SERVER_NAME + " greets " + name);
+            out.flush();
+        }
         sendOptions();
     }
     private void HELO() {
@@ -147,45 +154,86 @@ public class ServerWorker implements Runnable {
     }
     private void MAIL() {
         if(line.startsWith("MAIL FROM:")) {
-            String tmp = line.substring(10);
-            LOG.info("Received: " + tmp);
-            mail.addFrom(tmp);
+            String email = Utils.options(line, "MAIL FROM:");
+            LOG.info("Received: " + email);
+            mail.addFrom(email);
 
             out.println("250 OK");
             out.flush();
         } else {
-
+            // TODO: Invalid command
         }
     }
     private void RCPT() {
         if(line.startsWith("RCPT TO:")) {
-            String tmp = line.substring(9);
-            LOG.info("Received: " + tmp);
-            mail.addTo(tmp);
+            String email = Utils.options(line, "RCPT TO:");
+            LOG.info("Received: " + email);
+            mail.addTo(email);
 
             out.println("250 OK");
             out.flush();
         } else {
-
+            // TODO: Invalid command
         }
     }
-    private void DATA() {
-        // TODO
+    private void DATA() throws IOException {
+        if(!line.equals("DATA")) {
+            // parameters are not allowed and considered as error
+            out.println("ERROR");  // TODO: use correct code
+            out.flush();
+            return;
+        }
+        StringBuilder body = new StringBuilder();
+        while(true) {
+            line = in.readLine();
+            if(line == null)
+                return;
+            if(line.equals("."))  // TODO: Is it okay?
+                break;
+            // LOG.info(Utils.unescape(line));
+            body.append(line);
+            body.append("\n");
+        }
+        // Remove extra "\n"
+        if(body.length() > 0) {
+            body.deleteCharAt(body.length() - 1);
+        }
+        mail.addData(body.toString());
         out.println("250 OK");
         out.flush();
     }
     private void RSET() {
-        // TODO
+        // RSET does not greet the user again, just clear all stored content and buffers
+        // TODO ?
+        if(!line.equals("RSET")) {
+            // parameters are not allowed and considered as error
+            out.println("ERROR");  // TODO: use correct code
+            out.flush();
+            return;
+        }
+        mail = new Mail();
         out.println("250 OK");
         out.flush();
     }
     private void NOOP() {
-        // TODO
+        // It does nothing
         out.println("250 OK");
         out.flush();
     }
     private void QUIT() {
-        // TODO
+        if(!line.equals("QUIT")) {
+            // parameters are not allowed and considered as error
+            out.println("ERROR");  // TODO: use correct code
+            out.flush();
+            return;
+        }
+        isRunning = false;
+        out.println("250 OK");
+        out.flush();
+    }
+    private void HELP() {
+        // TODO ?
+        out.println(mail.toString());
         out.println("250 OK");
         out.flush();
     }
