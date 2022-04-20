@@ -27,7 +27,9 @@ Some changes where made to use this program
 * Add `Dockerfile` configuration
 * Complete `.gitignore` file
 
-
+```bash
+mvn package
+```
 
 
 
