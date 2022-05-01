@@ -11,19 +11,38 @@ import java.util.regex.Pattern;
 public class CampaignManager {
 
     /* Private variables */
-    private String _emailList;
-    private String _messageList;
-    private String _ressourcesPath = ".\\smtp\\client\\rsc\\";
-    private final int MIN_GROUP_MEMBERS = 3;
+    private final String _emailList;
+    private final String _resourcesPath = ".\\smtp\\client\\rsc\\";
+    private String _messageFolder = ".\\smtp\\client\\rsc\\messages\\";
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
+    private final int MIN_GROUP_MEMBERS = 3;
 
-    /* Constructor */
-    public CampaignManager(String emailList, String messageList){
-        this._emailList = _ressourcesPath + emailList;
-        this._messageList = _ressourcesPath + messageList;
+    /**
+     * The constructor to use if the email folder is the default one
+     * @param emailList name of the file containing email addresses
+     */
+    public CampaignManager(String emailList){
+        this._emailList = _resourcesPath + emailList;
+        System.out.println("CAMPAIGN MANAGER::Constructor - Your email file is read here: " + this._emailList);
     }
 
-    /* Method to count lines in a file */
+    /**
+     * The constructor to use to specify a custom folder for email location
+     * @param emailList name of the file containing email addresses
+     * @param messageFolder path of the folder containing email messages
+     */
+    public CampaignManager(String emailList, String messageFolder){
+        this._emailList = _resourcesPath + emailList;
+        this._messageFolder = messageFolder;
+        System.out.println("CAMPAIGN MANAGER::Constructor - Your email file is read here: " + this._emailList);
+        System.out.println("CAMPAIGN MANAGER::Constructor - Your message folder is here: " + this._messageFolder);
+    }
+
+    /**
+     * @brief getLineCount returns the number of lines in a file
+     * @param file the file for which we want to count lines
+     * @return the number of lines in the file
+     */
     private int getLineCount(String file) {
         int lineCount = 0;
 
@@ -35,12 +54,16 @@ public class CampaignManager {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("CAMPAIGN MANAGER::getLineCount() " + e);
         }
         return lineCount;
     }
 
-    /* Method to create mailing groups */
+    /**
+     * @brief getMailingGroups make mailing groups from email address file
+     * @param numberOfGroups the number of groups we want to created
+     * @return a vector of vector of email addresses. Each subvector represents a mailing group
+     */
     public Vector<Vector<String>> getMailingGroups(int numberOfGroups){
 
         /* Get number of email addresses in file */
@@ -49,14 +72,14 @@ public class CampaignManager {
 
         /* If less than 2, cannot start campaign, at least one sender and two recievers requiered */
         if (nbEmailAddresses < 3){
-            System.out.println("CAMPAIGN MANAGER::Not enough email addresses to start campaign. At least 3 required");
+            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Not enough email addresses to start campaign. At least 3 required");
             return null;
         }
 
         /* Check that the number of requested groups can be created with the email addresses in file */
         if (numberOfGroups > maxGroupsPossible){
-            System.out.println("CAMPAIGN MANAGER::Not enough email address to make " + numberOfGroups + " groups.");
-            System.out.println("CAMPAIGN MANAGER::Continue using " + maxGroupsPossible + " groups ? [y/n]");
+            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Not enough email address to make " + numberOfGroups + " groups.");
+            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Continue using " + maxGroupsPossible + " groups ? [y/n]");
 
             /* Read user confirmation */
             Scanner scanner = new Scanner(System.in);
@@ -102,7 +125,7 @@ public class CampaignManager {
                 /* Check that email address is valid */
                 matcher = pattern.matcher(emailAddress);
                 if (!matcher.matches()){
-                    System.out.println("CAMPAIGN MANAGER::Invalid email address found in file: " + emailAddress + ". Exiting...");
+                    System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Invalid email address found in file: " + emailAddress + ". Exiting...");
                     return null;
                 }
 
@@ -110,9 +133,8 @@ public class CampaignManager {
                 emails.add(emailAddress);
             }
 
-
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - " + e);
         }
 
         /* Create groups */
@@ -128,27 +150,94 @@ public class CampaignManager {
                     break;
                 }
             }
-
-
         }
+
 
         return groups;
 
     }
 
+    /**
+     * @brief getMessages list available messages in message folder
+     */
+    public void getMessages(){
 
+        File messageDirectory = new File(this._messageFolder);
+        String files[] = messageDirectory.list();
+
+        if (files == null){
+            System.out.println("CAMPAIGN MANAGER::getMessages() - Directory does not exist or cannot be read");
+            return;
+        }
+
+        if (files.length == 0){
+            System.out.println("CAMPAIGN MANAGER::getMessages() - No files found in message folder");
+            return;
+        }
+
+        System.out.println("CAMPAIGN MANAGER::getMessages() - Available messages, use given index to select");
+        for (int i = 0; i < files.length; i++){
+            System.out.println("[" + i + "] " + files[i] );
+        }
+
+    }
+
+    /**
+     * @brief getMessageAsUtf8 get the contents of a message file as UTF-8 string
+     * @param index the index of the file, as shown in getMessages()
+     * @return the UTF-8 strinf value of the message file selected by index
+     */
+    public String getMessageAsUtf8(int index) {
+        File messageDirectory = new File(this._messageFolder);
+        String files[] = messageDirectory.list();
+        String file;
+        StringBuilder sb = new StringBuilder();
+        int c;
+
+        if (index >= 0 && index < files.length) {
+            file = files[index];
+        } else {
+            System.out.println("CAMPAIGN CampaignManager::getMessageAsUtf8 - Index out of range");
+            return "";
+        }
+
+        try (FileReader fr = new FileReader(this._messageFolder + file, StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(fr))
+        {
+            while ((c = br.read()) != -1){
+                sb.append((char) c);
+            }
+
+        } catch (Exception e){
+            System.out.println("CAMPAIGN MANAGER::getMessageAsUtf8() - " + e);
+        }
+
+        return String.valueOf(sb);
+
+    }
+
+    /**
+     * @brief main method used for local testing
+     * @param args standard arguments
+     */
     public static void main(String[] args) {
         System.out.println("CAMPAIGN MANAGER::How can I help you ?");
 
-        CampaignManager cm = new CampaignManager("emails.txt", "messages.txt");
+        CampaignManager cm = new CampaignManager("emails.txt");
+        //CampaignManager cm2 = new CampaignManager("emails.txt", "C:\\Users\\yan61\\OneDrive\\Documents\\HEIG-VD\\4. ANNEE\\RES\\Labos\\labo04\\messages");
 
-        Vector<Vector<String>> groups = cm.getMailingGroups(2);
-
+        //Vector<Vector<String>> groups = cm.getMailingGroups(2);
+        /*
         for (int i = 0; i < groups.size(); i++){
             for (int j = 0; j < groups.elementAt(i).size(); j++){
                 System.out.println(i + ":" + j + "=" + groups.elementAt(i).get(j));
             }
         }
+        */
+
+        cm.getMessages();
+        String test = cm.getMessageAsUtf8(0);
+        System.out.println(test);
 
 
     }

@@ -1,0 +1,11 @@
+This is a simple message
+---
+This is a second simple message
+---
+This is a third message
+that is written on multiple lines
+---
+This is a fourth message, that is written
+on multiple lines
+
+And contains a paragraph
