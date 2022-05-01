@@ -6,6 +6,12 @@
     <version>1.0</version>
     <packaging>jar</packaging>
     <dependencies>
+        <!-- For debug -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

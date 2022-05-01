@@ -1,4 +1,4 @@
-package main.java.ch.heigvd.api.smtp;
+package ch.heigvd.api.smtp;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
