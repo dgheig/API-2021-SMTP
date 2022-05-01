@@ -1,0 +1,6 @@
+ch/heigvd/api/smtp/ServerWorker.class
+ch/heigvd/api/smtp/CRLFPrintWriter.class
+ch/heigvd/api/smtp/Main.class
+ch/heigvd/api/smtp/Mail.class
+ch/heigvd/api/smtp/Server.class
+ch/heigvd/api/smtp/Utils.class
