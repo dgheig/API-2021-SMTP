@@ -17,14 +17,20 @@ public class CampaignManager {
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
     private final int MIN_GROUP_MEMBERS = 3;
 
-    /* Constructor */
+    /**
+     * The constructor to use if the email folder is the default one
+     * @param emailList name of the file containing email addresses
+     */
     public CampaignManager(String emailList){
         this._emailList = _resourcesPath + emailList;
         System.out.println("CAMPAIGN MANAGER::Constructor - Your email file is read here: " + this._emailList);
-        //System.out.println("CAMPAIGN MANAGER::Constructor - Your message folder is here: " + this._messageFolder);
     }
 
-    /* Constructor with custom message folder path*/
+    /**
+     * The constructor to use to specify a custom folder for email location
+     * @param emailList name of the file containing email addresses
+     * @param messageFolder path of the folder containing email messages
+     */
     public CampaignManager(String emailList, String messageFolder){
         this._emailList = _resourcesPath + emailList;
         this._messageFolder = messageFolder;
@@ -32,7 +38,11 @@ public class CampaignManager {
         System.out.println("CAMPAIGN MANAGER::Constructor - Your message folder is here: " + this._messageFolder);
     }
 
-    /* Method to count lines in a file */
+    /**
+     * @brief getLineCount returns the number of lines in a file
+     * @param file the file for which we want to count lines
+     * @return the number of lines in the file
+     */
     private int getLineCount(String file) {
         int lineCount = 0;
 
@@ -49,7 +59,11 @@ public class CampaignManager {
         return lineCount;
     }
 
-    /* Method to create mailing groups */
+    /**
+     * @brief getMailingGroups make mailing groups from email address file
+     * @param numberOfGroups the number of groups we want to created
+     * @return a vector of vector of email addresses. Each subvector represents a mailing group
+     */
     public Vector<Vector<String>> getMailingGroups(int numberOfGroups){
 
         /* Get number of email addresses in file */
@@ -143,6 +157,9 @@ public class CampaignManager {
 
     }
 
+    /**
+     * @brief getMessages list available messages in message folder
+     */
     public void getMessages(){
 
         File messageDirectory = new File(this._messageFolder);
@@ -165,6 +182,11 @@ public class CampaignManager {
 
     }
 
+    /**
+     * @brief getMessageAsUtf8 get the contents of a message file as UTF-8 string
+     * @param index the index of the file, as shown in getMessages()
+     * @return the UTF-8 strinf value of the message file selected by index
+     */
     public String getMessageAsUtf8(int index) {
         File messageDirectory = new File(this._messageFolder);
         String files[] = messageDirectory.list();
@@ -186,8 +208,6 @@ public class CampaignManager {
                 sb.append((char) c);
             }
 
-
-
         } catch (Exception e){
             System.out.println("CAMPAIGN MANAGER::getMessageAsUtf8() - " + e);
         }
@@ -196,7 +216,10 @@ public class CampaignManager {
 
     }
 
-
+    /**
+     * @brief main method used for local testing
+     * @param args standard arguments
+     */
     public static void main(String[] args) {
         System.out.println("CAMPAIGN MANAGER::How can I help you ?");
 
