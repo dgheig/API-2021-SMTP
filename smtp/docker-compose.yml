@@ -7,19 +7,18 @@ services:
     networks:
       default:
       smtp:
-        ipv4_address: 192.168.250.2
 
   mockmock:
     build: ./mockmock
     image: res-mockmock
+    ports:
+      - "8282:8282"
+      - "2500:25"
     networks:
+      default:
       smtp:
-        ipv4_address: 192.168.250.3
 
 networks:
   smtp:
     driver: "bridge"
     name: smtp
-    ipam:
-      config:
-        - subnet: 192.168.250.0/24
