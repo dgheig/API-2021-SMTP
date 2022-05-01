@@ -15,12 +15,13 @@ import java.util.logging.Logger;
  */
 public class ServerWorker implements Runnable {
 
-    private final static String SERVER_NAME = "foo.com";
+    private final Server server;
     private final static Logger LOG = Logger.getLogger(ServerWorker.class.getName());
     private Socket socket;
     private Boolean isRunning = true;
 
     private Mail mail;
+    private String clientNAme = null;
     private String line;
     private BufferedReader in;
     private PrintWriter out;
@@ -54,9 +55,10 @@ public class ServerWorker implements Runnable {
      *
      * @param clientSocket connected to worker
      */
-    public ServerWorker(Socket clientSocket) {
+    public ServerWorker(Server server, Socket clientSocket) {
         // Log output on a single line
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%6$s%n");
+        this.server = server;
         socket = clientSocket;
 
     }
@@ -87,7 +89,7 @@ public class ServerWorker implements Runnable {
 
             // Starting exchanges
 
-            out.println("220 " + SERVER_NAME + " Simple Mail Transfer Service Ready");
+            out.println("220 " + server.getNAME() + " Simple Mail Transfer Service Ready");
             out.flush();
             while(isRunning) {
                 line = in.readLine();
@@ -106,20 +108,9 @@ public class ServerWorker implements Runnable {
     }
 
     private void dispatch() throws IOException {
-        if(line.startsWith("EHLO")) {
-            EHLO();
-        }
-        else if(line.startsWith("HELO")) {
-            HELO();
-        }
-        else if(line.startsWith("MAIL")) {
-            MAIL();
-        }
-        else if(line.startsWith("RCPT")) {
-            RCPT();
-        }
-        else if(line.startsWith("DATA")) {
-            DATA();
+        // Commands without order
+        if(line.startsWith("HELP")) {
+            HELP();
         }
         else if(line.startsWith("RSET")) {
             RSET();
@@ -133,18 +124,45 @@ public class ServerWorker implements Runnable {
         else if(line.startsWith("VRFY")) {
             VRFY();
         }
-        else if(line.startsWith("HELP")) {
-            HELP();
+        // Commands that must come in order
+        else if(line.startsWith("EHLO")) {
+            EHLO();
+        }
+        else if(line.startsWith("HELO")) {
+            HELO();
+        }
+        else if(clientNAme == null) {
+            BadSequenceOfCommands();
+        }
+        else if(line.startsWith("MAIL")) {
+            MAIL();
+        }
+        else if(!mail.hasFrom()) {
+            BadSequenceOfCommands();
+        }
+        else if(line.startsWith("RCPT")) {
+            RCPT();
+        }
+        else if(!mail.hasRecipients()) {
+            BadSequenceOfCommands();
+        }
+        else if(line.startsWith("DATA")) {
+            DATA();
         }
         else {  // Invalid code
 
         }
     }
 
+    private void BadSequenceOfCommands() {
+        out.println("503 Bad sequence of commands");
+        out.flush();
+    }
+
     private void EHLO() {
-        String name = Utils.substring(line, 5);
-        if(name != null) {
-            out.println(SERVER_NAME + " greets " + name);
+        clientNAme = Utils.substring(line, 5);
+        if(clientNAme != null) {
+            out.println(server.getNAME() + " greets " + clientNAme);
             out.flush();
         }
         sendOptions();
@@ -199,6 +217,7 @@ public class ServerWorker implements Runnable {
             body.deleteCharAt(body.length() - 1);
         }
         mail.addData(body.toString());
+        mail.sendEmails();
         out.println("250 OK");
         out.flush();
     }
@@ -228,7 +247,7 @@ public class ServerWorker implements Runnable {
             return;
         }
         isRunning = false;
-        out.println("250 OK");
+        out.println("221 " + server.getNAME() + "Goodbye " + clientNAme + ", closing connection");
         out.flush();
     }
     private void HELP() {
