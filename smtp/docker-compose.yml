@@ -4,6 +4,8 @@ services:
   smtp:
     build: ./server
     image: res-smtp
+    ports:
+      - "2525:25"
     networks:
       default:
       smtp:
@@ -12,8 +14,8 @@ services:
     build: ./mockmock
     image: res-mockmock
     ports:
-      - "8282:8282"
       - "2500:25"
+      - "8282:8282"
     networks:
       default:
       smtp:
