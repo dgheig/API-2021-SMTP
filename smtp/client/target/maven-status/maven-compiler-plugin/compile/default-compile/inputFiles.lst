@@ -1,0 +1,13 @@
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/messageRetrievers/MessageRetriever.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/CampaignManager.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/emailsGrouping/MinimalEmailsGrouping.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/Utils.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/messageRetrievers/RandomMessage.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/emailsGrouping/EmailsGrouping.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/Config.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/CRLFPrintWriter.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/Main.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/messageRetrievers/AskMessageFile.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/emailsRetrievers/EmailsRetriever.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/emailsRetrievers/TxtFileParsor.java
+/home/david/Desktop/API-2021-SMTP/smtp/client/src/main/java/ch/heigvd/api/smtp/Client.java

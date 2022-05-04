@@ -208,6 +208,9 @@ public class ServerWorker implements Runnable {
                 return;
             if(line.equals("."))  // TODO: Is it okay?
                 break;
+            if(line.startsWith(".")) {
+                line = line.substring(1);
+            }
             // LOG.info(Utils.unescape(line));
             body.append(line);
             body.append("\n");

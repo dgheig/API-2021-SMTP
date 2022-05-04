@@ -1,29 +1,69 @@
-package main.java.ch.heigvd.api.smtp;
+package ch.heigvd.api.smtp;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import ch.heigvd.api.smtp.emailsGrouping.EmailsGrouping;
+import ch.heigvd.api.smtp.emailsGrouping.MinimalEmailsGrouping;
+import ch.heigvd.api.smtp.emailsRetrievers.EmailsRetriever;
+import ch.heigvd.api.smtp.emailsRetrievers.TxtFileParsor;
+import ch.heigvd.api.smtp.messageRetrievers.AskMessageFile;
+import ch.heigvd.api.smtp.messageRetrievers.MessageRetriever;
+
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class CampaignManager {
 
     /* Private variables */
-    private final String _emailList;
-    private final String _resourcesPath = ".\\smtp\\client\\rsc\\";
-    private String _messageFolder = ".\\smtp\\client\\rsc\\messages\\";
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
-    private final int MIN_GROUP_MEMBERS = 3;
+    private final int MIN_GROUP_MEMBERS;
+    private final EmailsGrouping emailsGrouping;
+    private final EmailsRetriever emailsRetriever;
+    private final MessageRetriever messageRetriever;
 
     /**
      * The constructor to use if the email folder is the default one
      * @param emailList name of the file containing email addresses
      */
-    public CampaignManager(String emailList){
-        this._emailList = _resourcesPath + emailList;
-        System.out.println("CAMPAIGN MANAGER::Constructor - Your email file is read here: " + this._emailList);
+    public CampaignManager(
+            EmailsGrouping emailsGrouping,
+            EmailsRetriever emailsRetriever,
+            MessageRetriever messageRetriever,
+            int minGroupMembers
+    ){
+        super();
+        this.emailsGrouping = emailsGrouping;
+        this.emailsRetriever = emailsRetriever;
+        this.messageRetriever = messageRetriever;
+        this.MIN_GROUP_MEMBERS = minGroupMembers;
+    }
+    /**
+     * The constructor to use if the email folder is the default one
+     * @param emailList name of the file containing email addresses
+     */
+    public CampaignManager(
+            EmailsGrouping emailsGrouping,
+            EmailsRetriever emailsRetriever,
+            MessageRetriever messageRetriever
+    ){
+        this(
+            emailsGrouping,
+            emailsRetriever,
+            messageRetriever,
+            3
+        );
+    }
+    /**
+     * The constructor to use if the email folder is the default one
+     * @param emailList name of the file containing email addresses
+     */
+    public CampaignManager(String emailList, String messageFolder){
+        this(
+                new MinimalEmailsGrouping(3),
+                new TxtFileParsor(emailList),
+                new AskMessageFile(messageFolder),
+                3
+        );
     }
 
     /**
@@ -31,214 +71,67 @@ public class CampaignManager {
      * @param emailList name of the file containing email addresses
      * @param messageFolder path of the folder containing email messages
      */
-    public CampaignManager(String emailList, String messageFolder){
-        this._emailList = _resourcesPath + emailList;
-        this._messageFolder = messageFolder;
-        System.out.println("CAMPAIGN MANAGER::Constructor - Your email file is read here: " + this._emailList);
-        System.out.println("CAMPAIGN MANAGER::Constructor - Your message folder is here: " + this._messageFolder);
+    public CampaignManager(String emailList){
+        this(emailList, ".\\smtp\\client\\rsc\\messages\\");
     }
 
-    /**
-     * @brief getLineCount returns the number of lines in a file
-     * @param file the file for which we want to count lines
-     * @return the number of lines in the file
-     */
-    private int getLineCount(String file) {
-        int lineCount = 0;
-
-        try (FileReader email_fr = new FileReader(file, StandardCharsets.UTF_8);
-             BufferedReader email_br = new BufferedReader(email_fr))
-        {
-            while((email_br.readLine()) != null) {
-                lineCount++;
-            }
-
-        } catch (IOException e) {
-            System.out.println("CAMPAIGN MANAGER::getLineCount() " + e);
-        }
-        return lineCount;
-    }
 
     /**
      * @brief getMailingGroups make mailing groups from email address file
      * @param numberOfGroups the number of groups we want to created
      * @return a vector of vector of email addresses. Each subvector represents a mailing group
      */
-    public Vector<Vector<String>> getMailingGroups(int numberOfGroups){
-
+    public List<List<String>> getMailingGroups(int numberOfGroups) throws Exception {
+        List<String> emails = emailsRetriever.getEmails();
+        for(String email: emails) {
+            if(!Utils.validateEmail(email)) {
+                throw new Exception("Invalid email found: " + email);
+            }
+        }
         /* Get number of email addresses in file */
-        int nbEmailAddresses = getLineCount(this._emailList);
+        int nbEmailAddresses = emails.size();
         int maxGroupsPossible = nbEmailAddresses / MIN_GROUP_MEMBERS;
 
         /* If less than 2, cannot start campaign, at least one sender and two recievers requiered */
-        if (nbEmailAddresses < 3){
-            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Not enough email addresses to start campaign. At least 3 required");
-            return null;
+        if (nbEmailAddresses < MIN_GROUP_MEMBERS){
+            throw new Exception("Not enough email addresses to start campaign. At least " + MIN_GROUP_MEMBERS + " required");
         }
 
         /* Check that the number of requested groups can be created with the email addresses in file */
         if (numberOfGroups > maxGroupsPossible){
             System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Not enough email address to make " + numberOfGroups + " groups.");
-            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Continue using " + maxGroupsPossible + " groups ? [y/n]");
-
-            /* Read user confirmation */
-            Scanner scanner = new Scanner(System.in);
-            String input ="";
-            Boolean yesno = true;
-
-            while (yesno){
-
-                input = scanner.nextLine();
-
-                switch(input){
-                    case "y":
-                    case "Y":
-                        numberOfGroups = maxGroupsPossible;
-                        yesno = false;
-                        break;
-                    case "n":
-                    case "N":
-                        return null;
-                    default:
-                        break;
-                }
-            }
-        }
-
-
-        Vector<Vector<String>> groups = new Vector<>(numberOfGroups);
-        Vector<String> emails = new Vector<>(nbEmailAddresses);
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher matcher;
-
-        /* Read email addresses from file */
-        try (FileReader email_fr = new FileReader(this._emailList, StandardCharsets.UTF_8);
-             BufferedReader email_br = new BufferedReader(email_fr))
-        {
-
-            String emailAddress = "";
-
-
-            while (email_br.ready()){
-                /* Read an email address from file */
-                emailAddress = email_br.readLine();
-                /* Check that email address is valid */
-                matcher = pattern.matcher(emailAddress);
-                if (!matcher.matches()){
-                    System.out.println("CAMPAIGN MANAGER::getMailingGroups() - Invalid email address found in file: " + emailAddress + ". Exiting...");
-                    return null;
-                }
-
-                /* Add element to vector containing all email addresses */
-                emails.add(emailAddress);
+            if(!Utils.askConfirmation(
+                "Continue using " + maxGroupsPossible + " groups ?"
+            )) {
+                return null;
             }
 
-        } catch (IOException e) {
-            System.out.println("CAMPAIGN MANAGER::getMailingGroups() - " + e);
         }
-
-        /* Create groups */
-        int e = 0;
-        int groupsRemaining = numberOfGroups;
-        for (int g = 0; g < numberOfGroups; g++){
-            groups.add(new Vector<>());
-            while (e < nbEmailAddresses){
-                groups.elementAt(g).add(emails.elementAt(e));
-                e++;
-                if (e % MIN_GROUP_MEMBERS == 0 && groupsRemaining > 1){
-                    groupsRemaining--;
-                    break;
-                }
-            }
-        }
+        List<List<String>> groups = emailsGrouping.group(emails);
 
 
         return groups;
 
     }
 
-    /**
-     * @brief getMessages list available messages in message folder
-     */
-    public void getMessages(){
 
-        File messageDirectory = new File(this._messageFolder);
-        String files[] = messageDirectory.list();
-
-        if (files == null){
-            System.out.println("CAMPAIGN MANAGER::getMessages() - Directory does not exist or cannot be read");
-            return;
-        }
-
-        if (files.length == 0){
-            System.out.println("CAMPAIGN MANAGER::getMessages() - No files found in message folder");
-            return;
-        }
-
-        System.out.println("CAMPAIGN MANAGER::getMessages() - Available messages, use given index to select");
-        for (int i = 0; i < files.length; i++){
-            System.out.println("[" + i + "] " + files[i] );
-        }
-
-    }
-
-    /**
-     * @brief getMessageAsUtf8 get the contents of a message file as UTF-8 string
-     * @param index the index of the file, as shown in getMessages()
-     * @return the UTF-8 strinf value of the message file selected by index
-     */
-    public String getMessageAsUtf8(int index) {
-        File messageDirectory = new File(this._messageFolder);
-        String files[] = messageDirectory.list();
-        String file;
-        StringBuilder sb = new StringBuilder();
-        int c;
-
-        if (index >= 0 && index < files.length) {
-            file = files[index];
-        } else {
-            System.out.println("CAMPAIGN CampaignManager::getMessageAsUtf8 - Index out of range");
-            return "";
-        }
-
-        try (FileReader fr = new FileReader(this._messageFolder + file, StandardCharsets.UTF_8);
-             BufferedReader br = new BufferedReader(fr))
-        {
-            while ((c = br.read()) != -1){
-                sb.append((char) c);
-            }
-
-        } catch (Exception e){
-            System.out.println("CAMPAIGN MANAGER::getMessageAsUtf8() - " + e);
-        }
-
-        return String.valueOf(sb);
-
-    }
-
-    /**
-     * @brief main method used for local testing
-     * @param args standard arguments
-     */
-    public static void main(String[] args) {
+    public void start(String server, int port) {
         System.out.println("CAMPAIGN MANAGER::How can I help you ?");
+        try {
+            List<List<String>> groups = getMailingGroups(5);
+            if(groups == null)
+                return;
+            List<String> message = messageRetriever.getMessage();
 
-        CampaignManager cm = new CampaignManager("emails.txt");
-        //CampaignManager cm2 = new CampaignManager("emails.txt", "C:\\Users\\yan61\\OneDrive\\Documents\\HEIG-VD\\4. ANNEE\\RES\\Labos\\labo04\\messages");
+            int index = new Random().nextInt(groups.size());
+            List<String> recipients = groups.get(index);
+            index = new Random().nextInt(recipients.size());
+            String sender = recipients.remove(index);
 
-        //Vector<Vector<String>> groups = cm.getMailingGroups(2);
-        /*
-        for (int i = 0; i < groups.size(); i++){
-            for (int j = 0; j < groups.elementAt(i).size(); j++){
-                System.out.println(i + ":" + j + "=" + groups.elementAt(i).get(j));
-            }
+            Client.sendEmails(server, port, sender, recipients, message);
+        } catch (Exception e) {
+            System.out.println("An error occured: " + e.getMessage());
+            System.out.println("Aborting");
         }
-        */
-
-        cm.getMessages();
-        String test = cm.getMessageAsUtf8(0);
-        System.out.println(test);
-
-
     }
 }

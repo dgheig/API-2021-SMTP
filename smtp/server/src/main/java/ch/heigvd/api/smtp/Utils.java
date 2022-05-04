@@ -95,6 +95,8 @@ public class Utils {
             out.flush();
             readLineOrThrow(in, "354");
             for(String dataLine: data) {
+                if(dataLine.startsWith("."))
+                    dataLine = "." + dataLine;
                 out.println(dataLine);
             }
             out.println(".");
