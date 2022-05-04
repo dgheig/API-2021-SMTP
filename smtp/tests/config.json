@@ -1,6 +1,6 @@
 {
-    "server": "172.18.0.2",
+    "server": "172.18.0.3",
     "emailsFile": "tests/emails.txt",
-    "messageFolder": "tests/messages",
+    "messageFolder": "tests/messages2",
     "victimCount": 3
 }

@@ -42,6 +42,25 @@ public class Client {
         }
         return result;
     }
+
+    public static String checkOptions(BufferedReader input) throws Exception {
+        String line = null;
+
+        // Deal with options
+        while((line = readLineOrThrow(input, "250")).startsWith("250-")) {
+            if (line.contains("8BITMIME")){
+                LOG.info("Server supports 8BITMIME extension (UTF-8)");
+            }
+        }
+        if(!line.startsWith("250 ")) {
+            LOG.info(line);
+            throw new Exception("Error while sending");
+        }
+        if (line.contains("8BITMIME")){
+            LOG.info("Server supports 8BITMIME extension (UTF-8)");
+        }
+        return line;
+    }
     public static boolean sendEmails(String server, int port, String from, List<String> to, List<String> data) {
         try(
                 Socket socket = new Socket(server, port);
@@ -59,11 +78,7 @@ public class Client {
             out.flush();
 
             // Deal with options
-            while((line = readLineOrThrow(in, "250")).startsWith("250-"));
-            if(!line.startsWith("250 ")) {
-                LOG.info(line);
-                throw new Exception("Error while sending");
-            }
+            checkOptions(in);
             out.println("MAIL FROM:" + from);
             out.flush();
             readLineOrThrow(in, "250");
