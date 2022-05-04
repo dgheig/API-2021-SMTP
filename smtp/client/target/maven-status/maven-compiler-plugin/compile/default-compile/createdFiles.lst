@@ -1,0 +1,13 @@
+ch/heigvd/api/smtp/emailsRetrievers/EmailsRetriever.class
+ch/heigvd/api/smtp/Client.class
+ch/heigvd/api/smtp/messageRetrievers/RandomMessage.class
+ch/heigvd/api/smtp/messageRetrievers/AskMessageFile.class
+ch/heigvd/api/smtp/CampaignManager.class
+ch/heigvd/api/smtp/emailsGrouping/EmailsGrouping.class
+ch/heigvd/api/smtp/Main.class
+ch/heigvd/api/smtp/messageRetrievers/MessageRetriever.class
+ch/heigvd/api/smtp/Utils.class
+ch/heigvd/api/smtp/CRLFPrintWriter.class
+ch/heigvd/api/smtp/emailsGrouping/MinimalEmailsGrouping.class
+ch/heigvd/api/smtp/emailsRetrievers/TxtFileParsor.class
+ch/heigvd/api/smtp/Config.class
