@@ -23,7 +23,6 @@ public class MinimalEmailsGrouping implements EmailsGrouping {
                     current = new ArrayList<>();
                     groups.add(current);
                 }
-                count = 0;
             }
             current.add(email);
             ++count;
