@@ -27,9 +27,9 @@ public class ServerWorker implements Runnable {
     private PrintWriter out;
 
     private List<String> options = new ArrayList<>(Arrays.asList(
-            // "8BITMIME",
+            "8BITMIME",
             // "SIZE",
-            "DSN",
+            // "DSN",
             "HELP"
     ));
 

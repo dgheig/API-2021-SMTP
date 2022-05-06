@@ -9,6 +9,8 @@ services:
     networks:
       default:
       smtp:
+    labels:
+    - "RES=SMTP"
 
   mockmock:
     build: ./mockmock
@@ -19,6 +21,8 @@ services:
     networks:
       default:
       smtp:
+    labels:
+    - "RES=SMTP"
 
 networks:
   smtp:

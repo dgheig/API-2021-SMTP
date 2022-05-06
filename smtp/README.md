@@ -6,6 +6,71 @@ We need privilegied permissions to run a server with a port below 1025, in our c
 
 
 
+### Usage
+
+All commands are run from the `smtp/` folder
+
+1. Compile your programs
+
+   * Linux
+
+     ```bash
+     ./compile.sh
+     ```
+
+   * Windows
+
+     ```powershell
+     
+     ```
+
+     
+
+2. Launch your server MockMock. We use docker to isolate the process and avoid permission issue with port 25
+
+   ```bash
+   docker-compose up -d mockmock  # This will automaticly build the image
+   ```
+
+   Alternatively, we can launch our relay server too
+
+   ```
+   docker-compose up -d
+   ```
+
+3. Display all your containers
+
+   ```bash
+   docker container ls -f label=RES
+   ```
+
+4. Retrieve their ip using the name of the container
+
+   ```bash
+   docker inspect smtp_mockmock_1 -f '{{.NetworkSettings.Networks.smtp_default.IPAddress}}'
+   ```
+
+5. Edit your configuration file
+
+   ```bash
+   {
+       "server": "172.18.0.3",
+       "emailsFile": "tests/emails.txt",
+       "messageFolder": "tests/messages2",
+       "victimCount": 3
+   }
+   ```
+
+6. Launch your client using your configuration file
+
+   ```bash
+   java -jar client/target/SpamCampaign.jar tests/config.json
+   ```
+
+   
+
+
+
 ## MockMock
 
 This is a mock server for mailing. It behaves exactly as a real SMTP server would when handling messages and responding, but won't have any external impact as sending the mail to its recipients.
