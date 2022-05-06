@@ -8,15 +8,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Class implementing the MessageRetriever interface
+ * This class is used to let the user choose which email should be sent to a group
+ */
 public class AskMessageFile implements MessageRetriever{
     private File messageFolder;
+
+    /**
+     * Constructor using a File
+     * @param messageFolder The File object representing the folder containing the messages
+     */
     public AskMessageFile(File messageFolder) {
         this.messageFolder = messageFolder;
     }
+
+    /**
+     * Constructor using String
+     * @param messageFolder The path of the folder containing messages as String
+     */
     public AskMessageFile(String messageFolder) {
         this(new File(messageFolder));
     }
 
+    /**
+     * The class specific implementation of the getMessage method defined by the implemented interface
+     * @return
+     */
     @Override
     public List<String> getMessage() {
         return getMessageAsUtf8();
@@ -41,12 +59,16 @@ public class AskMessageFile implements MessageRetriever{
 
     }
 
+    /**
+     * Method used to prompt used to select a message among the available messages
+     * @return The File object of the selected message
+     */
     private File askFile() {
         File files[] = getMessageFiles();
         Scanner scanner = new Scanner(System.in);
         int index = -1;
         while(true) {
-            System.out.println("CAMPAIGN MANAGER::getMessages() - Available messages, use given index to select");
+            System.out.println("Available messages, use given index to select");
             for (int i = 0; i < files.length; i++){
                 System.out.println("[" + i + "] " + files[i] );
             }
@@ -57,15 +79,14 @@ public class AskMessageFile implements MessageRetriever{
                 else
                     System.out.println("Index out of range");
             } catch (Exception e) {
-                // ...
+                System.out.println("Invalid input");
             }
         }
     }
 
     /**
-     * @brief getMessageAsUtf8 get the contents of a message file as UTF-8 string
-     * @param index the index of the file, as shown in getMessages()
-     * @return the UTF-8 strinf value of the message file selected by index
+     * Method used to getMessageAsUtf8 get the contents of a message file as UTF-8 string
+     * @return a list of strings where each item is a line of the message
      */
     private List<String> getMessageAsUtf8() {
         File file = askFile();
@@ -80,7 +101,7 @@ public class AskMessageFile implements MessageRetriever{
             }
 
         } catch (Exception e){
-            System.out.println("CAMPAIGN MANAGER::getMessageAsUtf8() - " + e);
+            System.out.println("getMessageAsUtf8() - " + e);
         }
 
         return data;

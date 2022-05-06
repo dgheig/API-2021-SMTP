@@ -3,6 +3,10 @@ package ch.heigvd.api.smtp.emailsGrouping;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class implementing the EmailsGrouping interface.
+ * This class defines a method to create a user defined number of groups from a file containing email addresses
+ */
 public class MinimalEmailsGrouping implements EmailsGrouping {
     final private int nbPerGroup;
 
