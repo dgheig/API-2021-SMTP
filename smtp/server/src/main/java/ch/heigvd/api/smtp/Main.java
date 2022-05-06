@@ -1,17 +1,28 @@
 package ch.heigvd.api.smtp;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 // import picocli.CommandLine.Parameters;
 import java.util.concurrent.Callable;
 
-@Command(name = "SMTPServer", mixinStandardHelpOptions = true, version = "SMTPServer 1.0",
-        description = "Simple SMTP server")
+@Command(name = "SMTPServer", mixinStandardHelpOptions = true, version = "SMTPServer 1.0", description = "Simple SMTP server")
 public class Main implements Callable<Integer> {
-    @Option(names = {"-n", "--name"}, description = "name of the server to use")
+    @Option(names = { "-n", "--name" }, description = "name of the server to use")
     private String serverName = "anonymous";
-    @Option(names = {"-p", "--port"}, description = "port to use")
+    @Option(names = { "-p", "--port" }, description = "port to use")
     private Integer port = 25;
+    /*
+     * @Option(names = { "--server" }, description =
+     * "Fixed server to forward emails to")
+     * private String fixedServer;
+     * 
+     * @Option(names = {
+     * "--server-port" }, description =
+     * "Port of the fixed server to forward emails to (useless without --server option"
+     * )
+     * private Integer fixedServerPort = 25;
+     */
 
     @Override
     public Integer call() throws Exception { // your business logic goes here...

@@ -109,7 +109,7 @@ public class CampaignManager {
         }
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("How many group do you want to make?");
+        System.out.println("How many groups do you want to make?");
         int numberOfGroups = scanner.nextInt();
 
         /*

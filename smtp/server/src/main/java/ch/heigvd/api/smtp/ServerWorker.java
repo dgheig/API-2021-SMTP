@@ -1,6 +1,5 @@
 package ch.heigvd.api.smtp;
 
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -30,16 +29,16 @@ public class ServerWorker implements Runnable {
             "8BITMIME",
             // "SIZE",
             // "DSN",
-            "HELP"
-    ));
+            "HELP"));
 
     private void sendOptions() {
         Iterator<String> it = options.iterator();
-        if(!it.hasNext()) return;
+        if (!it.hasNext())
+            return;
 
         String value = it.next();
-        while(true) {
-            if(it.hasNext()) {
+        while (true) {
+            if (it.hasNext()) {
                 out.println("250-" + value);
                 value = it.next();
             } else {
@@ -53,7 +52,8 @@ public class ServerWorker implements Runnable {
     /**
      * Instantiation of a new worker mapped to a socket
      *
-     * @param clientSocket connected to worker
+     * @param clientSocket
+     *            connected to worker
      */
     public ServerWorker(Server server, Socket clientSocket) {
         // Log output on a single line
@@ -71,17 +71,16 @@ public class ServerWorker implements Runnable {
         handleClient(this.socket);
     }
 
-
     /**
      * Handle a single client connection: receive commands and send back the result.
      *
-     * @param clientSocket with the connection with the individual client.
+     * @param clientSocket
+     *            with the connection with the individual client.
      */
     private void handleClient(Socket clientSocket) {
-        try(
+        try (
                 InputStream inputStream = clientSocket.getInputStream();
-                OutputStream outputStream = clientSocket.getOutputStream();
-        ) {
+                OutputStream outputStream = clientSocket.getOutputStream();) {
             // Init "global per instance" variables
             mail = new Mail();
             in = new BufferedReader(new InputStreamReader(inputStream));
@@ -91,9 +90,9 @@ public class ServerWorker implements Runnable {
 
             out.println("220 " + server.getNAME() + " Simple Mail Transfer Service Ready");
             out.flush();
-            while(isRunning) {
+            while (isRunning) {
                 line = in.readLine();
-                if(line == null)
+                if (line == null)
                     return;
                 dispatch();
 
@@ -101,55 +100,41 @@ public class ServerWorker implements Runnable {
         } catch (IOException e) {
             LOG.log(Level.SEVERE, e.getMessage(), e);
             e.printStackTrace();
-            /*in = null;
-            out = null;*/
         }
 
     }
 
     private void dispatch() throws IOException {
         // Commands without order
-        if(line.startsWith("HELP")) {
+        if (line.startsWith("HELP")) {
             HELP();
-        }
-        else if(line.startsWith("RSET")) {
+        } else if (line.startsWith("RSET")) {
             RSET();
-        }
-        else if(line.startsWith("NOOP")) {
+        } else if (line.startsWith("NOOP")) {
             NOOP();
-        }
-        else if(line.startsWith("QUIT")) {
+        } else if (line.startsWith("QUIT")) {
             QUIT();
-        }
-        else if(line.startsWith("VRFY")) {
+        } else if (line.startsWith("VRFY")) {
             VRFY();
         }
         // Commands that must come in order
-        else if(line.startsWith("EHLO")) {
+        else if (line.startsWith("EHLO")) {
             EHLO();
-        }
-        else if(line.startsWith("HELO")) {
+        } else if (line.startsWith("HELO")) {
             HELO();
-        }
-        else if(clientNAme == null) {
+        } else if (clientNAme == null) {
             BadSequenceOfCommands();
-        }
-        else if(line.startsWith("MAIL")) {
+        } else if (line.startsWith("MAIL")) {
             MAIL();
-        }
-        else if(!mail.hasFrom()) {
+        } else if (!mail.hasFrom()) {
             BadSequenceOfCommands();
-        }
-        else if(line.startsWith("RCPT")) {
+        } else if (line.startsWith("RCPT")) {
             RCPT();
-        }
-        else if(!mail.hasRecipients()) {
+        } else if (!mail.hasRecipients()) {
             BadSequenceOfCommands();
-        }
-        else if(line.startsWith("DATA")) {
+        } else if (line.startsWith("DATA")) {
             DATA();
-        }
-        else {  // Invalid code
+        } else { // Invalid code
 
         }
     }
@@ -161,17 +146,19 @@ public class ServerWorker implements Runnable {
 
     private void EHLO() {
         clientNAme = Utils.substring(line, 5);
-        if(clientNAme != null) {
+        if (clientNAme != null) {
             out.println(server.getNAME() + " greets " + clientNAme);
             out.flush();
         }
         sendOptions();
     }
+
     private void HELO() {
         EHLO();
     }
+
     private void MAIL() {
-        if(line.startsWith("MAIL FROM:")) {
+        if (line.startsWith("MAIL FROM:")) {
             String email = Utils.options(line, "MAIL FROM:");
             LOG.info("Received: " + email);
             mail.addFrom(email);
@@ -182,8 +169,9 @@ public class ServerWorker implements Runnable {
             // TODO: Invalid command
         }
     }
+
     private void RCPT() {
-        if(line.startsWith("RCPT TO:")) {
+        if (line.startsWith("RCPT TO:")) {
             String email = Utils.options(line, "RCPT TO:");
             LOG.info("Received: " + email);
             mail.addTo(email);
@@ -194,21 +182,22 @@ public class ServerWorker implements Runnable {
             // TODO: Invalid command
         }
     }
+
     private void DATA() throws IOException {
-        if(!line.equals("DATA")) {
+        if (!line.equals("DATA")) {
             // parameters are not allowed and considered as error
-            out.println("ERROR");  // TODO: use correct code
+            out.println("ERROR"); // TODO: use correct code
             out.flush();
             return;
         }
         StringBuilder body = new StringBuilder();
-        while(true) {
+        while (true) {
             line = in.readLine();
-            if(line == null)
+            if (line == null)
                 return;
-            if(line.equals("."))  // TODO: Is it okay?
+            if (line.equals("."))
                 break;
-            if(line.startsWith(".")) {
+            if (line.startsWith(".")) {
                 line = line.substring(1);
             }
             // LOG.info(Utils.unescape(line));
@@ -216,7 +205,7 @@ public class ServerWorker implements Runnable {
             body.append("\n");
         }
         // Remove extra "\n"
-        if(body.length() > 0) {
+        if (body.length() > 0) {
             body.deleteCharAt(body.length() - 1);
         }
         mail.addData(body.toString());
@@ -224,12 +213,13 @@ public class ServerWorker implements Runnable {
         out.println("250 OK");
         out.flush();
     }
+
     private void RSET() {
         // RSET does not greet the user again, just clear all stored content and buffers
         // TODO ?
-        if(!line.equals("RSET")) {
+        if (!line.equals("RSET")) {
             // parameters are not allowed and considered as error
-            out.println("ERROR");  // TODO: use correct code
+            out.println("ERROR"); // TODO: use correct code
             out.flush();
             return;
         }
@@ -237,15 +227,17 @@ public class ServerWorker implements Runnable {
         out.println("250 OK");
         out.flush();
     }
+
     private void NOOP() {
         // It does nothing
         out.println("250 OK");
         out.flush();
     }
+
     private void QUIT() {
-        if(!line.equals("QUIT")) {
+        if (!line.equals("QUIT")) {
             // parameters are not allowed and considered as error
-            out.println("ERROR");  // TODO: use correct code
+            out.println("ERROR"); // TODO: use correct code
             out.flush();
             return;
         }
@@ -253,12 +245,14 @@ public class ServerWorker implements Runnable {
         out.println("221 " + server.getNAME() + "Goodbye " + clientNAme + ", closing connection");
         out.flush();
     }
+
     private void HELP() {
         // TODO ?
         out.println(mail.toString());
         out.println("250 OK");
         out.flush();
     }
+
     private void VRFY() {
         // TODO
         out.println("250 OK");

@@ -1,6 +1,8 @@
 package ch.heigvd.api.smtp;
+
 import ch.heigvd.api.smtp.emailsGrouping.MinimalEmailsGrouping;
 import ch.heigvd.api.smtp.emailsRetrievers.TxtFileParsor;
+import ch.heigvd.api.smtp.messageRetrievers.AskMessageFile;
 import ch.heigvd.api.smtp.messageRetrievers.RandomMessage;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -10,17 +12,24 @@ import picocli.CommandLine.Parameters;
 import java.io.File;
 import java.util.concurrent.Callable;
 
-@Command(name = "SMTPClientAttack", mixinStandardHelpOptions = true, version = "SMTPClientAttack 1.0",
-        description = "Spam your friends")
+@Command(name = "SMTPClientAttack", mixinStandardHelpOptions = true, version = "SMTPClientAttack 1.0", description = "Spam your friends")
 public class Main implements Callable<Integer> {
-    /*@Parameters(index = "0", description = "SMTP server's address (ip or hostname)")
-    private String server;
-    @Parameters(index = "1", description = "file container the emails")
-    private File emailFile;
-    @Option(names = {"-g", "--groups"}, description = "Minimal number of user per groups")
-    private Integer minPerGroups = 3;
-    @Option(names = {"-p", "--port"}, description = "SMTP server's port (default: 25")
-    private Integer port = 25;*/
+    /*
+     * @Parameters(index = "0", description =
+     * "SMTP server's address (ip or hostname)")
+     * private String server;
+     * 
+     * @Parameters(index = "1", description = "file container the emails")
+     * private File emailFile;
+     * 
+     * @Option(names = {"-g", "--groups"}, description =
+     * "Minimal number of user per groups")
+     * private Integer minPerGroups = 3;
+     * 
+     * @Option(names = {"-p", "--port"}, description =
+     * "SMTP server's port (default: 25")
+     * private Integer port = 25;
+     */
 
     @Parameters(index = "0", description = "Campaign Config file")
     private File configFile;
@@ -31,8 +40,7 @@ public class Main implements Callable<Integer> {
         CampaignManager cm = new CampaignManager(
                 new MinimalEmailsGrouping(3),
                 new TxtFileParsor(config.getEmailsFile()),
-                new RandomMessage(config.getMessageFolder())
-        );
+                new AskMessageFile(config.getMessageFolder()));
         cm.start(config.getServer(), config.getPort());
         return 0;
     }
