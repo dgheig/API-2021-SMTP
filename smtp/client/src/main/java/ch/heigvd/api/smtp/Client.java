@@ -9,35 +9,41 @@ import java.util.logging.Logger;
 
 public class Client {
     private final static Logger LOG = Logger.getLogger(Client.class.getName());
+
     public static void main(String[] args) {
         System.out.println("Hello world!");
     }
 
     private static String readLineOrThrow(BufferedReader input) throws IOException {
         String line = input.readLine();
-        if(line == null)
+        if (line == null)
             throw new IOException("NO OUTPUT");
         LOG.info(line);
         return line;
     }
+
     private static String readLineOrThrow(BufferedReader input, String start) throws IOException {
         String line = input.readLine();
-        if(line == null)
+        if (line == null)
             throw new IOException("NO OUTPUT");
-        if(!line.startsWith(start))
+        if (!line.startsWith(start))
             throw new IOException("An error occured: " + line);
         LOG.info(line);
         return line;
     }
+
     public static boolean sendEmails(String server, int port, String from, List<String> to, String data) {
         return sendEmails(server, port, from, to, Arrays.asList(data.split("\n")));
     }
+
     public static boolean sendEmailsSeparately(String server, int port, String from, List<String> to, String data) {
         return sendEmails(server, port, from, to, Arrays.asList(data.split("\n")));
     }
-    public static boolean sendEmailsSeparately(String server, int port, String from, List<String> to, List<String> data) {
+
+    public static boolean sendEmailsSeparately(String server, int port, String from, List<String> to,
+            List<String> data) {
         boolean result = true;
-        for(String email: to) {
+        for (String email : to) {
             result &= sendEmails(server, port, from, Arrays.asList(email), data);
         }
         return result;
@@ -47,32 +53,32 @@ public class Client {
         String line = null;
 
         // Deal with options
-        while((line = readLineOrThrow(input, "250")).startsWith("250-")) {
-            if (line.contains("8BITMIME")){
+        while ((line = readLineOrThrow(input, "250")).startsWith("250-")) {
+            if (line.contains("8BITMIME")) {
                 LOG.info("Server supports 8BITMIME extension (UTF-8)");
             }
         }
-        if(!line.startsWith("250 ")) {
+        if (!line.startsWith("250 ")) {
             LOG.info(line);
             throw new Exception("Error while sending");
         }
-        if (line.contains("8BITMIME")){
+        if (line.contains("8BITMIME")) {
             LOG.info("Server supports 8BITMIME extension (UTF-8)");
         }
         return line;
     }
+
     public static boolean sendEmails(String server, int port, String from, List<String> to, List<String> data) {
-        try(
+        try (
                 Socket socket = new Socket(server, port);
                 InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
-        ) {
+                OutputStream outputStream = socket.getOutputStream();) {
             LOG.info("Sending to server: " + server);
             BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
             PrintWriter out = new CRLFPrintWriter(outputStream);
             String line = null;
 
-            readLineOrThrow(in, "220");  // Server announcement
+            readLineOrThrow(in, "220"); // Server announcement
 
             out.println("EHLO SERVER");
             out.flush();
@@ -82,7 +88,7 @@ public class Client {
             out.println("MAIL FROM:" + from);
             out.flush();
             readLineOrThrow(in, "250");
-            for(String email: to) {
+            for (String email : to) {
                 out.println("RCPT TO:" + email);
                 out.flush();
                 readLineOrThrow(in, "250");
@@ -90,8 +96,8 @@ public class Client {
             out.println("DATA");
             out.flush();
             readLineOrThrow(in, "354");
-            for(String dataLine: data) {
-                if(dataLine.startsWith("."))
+            for (String dataLine : data) {
+                if (dataLine.startsWith("."))
                     dataLine = "." + dataLine;
                 out.println(dataLine);
             }

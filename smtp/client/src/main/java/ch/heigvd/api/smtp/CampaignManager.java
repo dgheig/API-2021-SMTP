@@ -81,7 +81,7 @@ public class CampaignManager {
      * @param numberOfGroups the number of groups we want to created
      * @return a vector of vector of email addresses. Each subvector represents a mailing group
      */
-    public List<List<String>> getMailingGroups(int numberOfGroups) throws Exception {
+    public List<List<String>> getMailingGroups() throws Exception {
         List<String> emails = emailsRetriever.getEmails();
         for(String email: emails) {
             if(!Utils.validateEmail(email)) {
@@ -96,6 +96,10 @@ public class CampaignManager {
         if (nbEmailAddresses < MIN_GROUP_MEMBERS){
             throw new Exception("Not enough email addresses to start campaign. At least " + MIN_GROUP_MEMBERS + " required");
         }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many group do you want to make?");
+        int numberOfGroups = scanner.nextInt();
 
         /* Check that the number of requested groups can be created with the email addresses in file */
         if (numberOfGroups > maxGroupsPossible){
@@ -118,7 +122,7 @@ public class CampaignManager {
     public void start(String server, int port) {
         System.out.println("CAMPAIGN MANAGER::How can I help you ?");
         try {
-            List<List<String>> groups = getMailingGroups(5);
+            List<List<String>> groups = getMailingGroups();
             if(groups == null)
                 return;
             List<String> message = messageRetriever.getMessage();

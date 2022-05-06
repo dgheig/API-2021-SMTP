@@ -7,8 +7,9 @@ public class CRLFPrintWriter extends PrintWriter {
     CRLFPrintWriter(OutputStream out) {
         super(out);
     }
+
     @Override
     public void println(String x) {
-        super.println(x + "\r");
+        super.print(x + "\r\n");
     }
 }

@@ -54,7 +54,8 @@ All commands are run from the `smtp/` folder
 
    ```bash
    {
-       "server": "172.18.0.3",
+       "server": "localhost",
+       "port": 2500,
        "emailsFile": "tests/emails.txt",
        "messageFolder": "tests/messages2",
        "victimCount": 3

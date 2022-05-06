@@ -1,6 +1,7 @@
 {
-    "server": "172.18.0.3",
+    "server": "127.0.0.1",
+    "port": 2500,
     "emailsFile": "tests/emails.txt",
-    "messageFolder": "tests/messages2",
+    "messageFolder": "tests/messages",
     "victimCount": 3
 }
