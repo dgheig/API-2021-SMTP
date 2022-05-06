@@ -10,6 +10,12 @@ import java.util.regex.Pattern;
 public class Utils {
     private final static Pattern EMAIL_REGEX = Pattern.compile("^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$");
 
+    public static String substring(String str, int index) {
+        if(str.length() > index)
+            return str.substring(index);
+        return "";
+    }
+
     /**
      * Method to validate an email address
      * @param email the email address to validate
