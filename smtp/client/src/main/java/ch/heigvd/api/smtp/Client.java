@@ -47,7 +47,7 @@ public class Client {
                 hasContentTypeHeader = true;
             } else {
                 if (!hasContentTypeHeader) {
-                    result.add("Content-Type: text/html; charset=UTF-8");
+                    result.add("Content-Type: charset=UTF-8");
                 }
                 if(!line.equals("")) {
                     result.add("");
