@@ -1,9 +1,11 @@
 package ch.heigvd.api.smtp;
 
 import ch.heigvd.api.smtp.emailsGrouping.MinimalEmailsGrouping;
+import ch.heigvd.api.smtp.emailsGrouping.RandomGrouping;
 import ch.heigvd.api.smtp.emailsRetrievers.TxtFileParsor;
 import ch.heigvd.api.smtp.messageRetrievers.AskMessageFile;
 import ch.heigvd.api.smtp.messageRetrievers.RandomMessage;
+import ch.heigvd.api.smtp.senderSelectors.AskSenderSelector;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -26,9 +28,11 @@ public class Main implements Callable<Integer> {
         try {
             Config config = Config.get(configFile);
             CampaignManager cm = new CampaignManager(
-                    new MinimalEmailsGrouping(3),
+                    new RandomGrouping(),
                     new TxtFileParsor(config.getEmailsFile()),
-                    new AskMessageFile(config.getMessageFolder()));
+                    new AskMessageFile(config.getMessageFolder()),
+                    new AskSenderSelector()
+            );
             cm.start(config.getServer(), config.getPort());
         } catch (Exception e) {
             System.out.println("Something went wrong");

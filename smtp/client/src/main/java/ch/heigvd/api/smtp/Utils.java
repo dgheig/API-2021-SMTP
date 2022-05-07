@@ -1,5 +1,8 @@
 package ch.heigvd.api.smtp;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,5 +50,50 @@ public class Utils {
             }
             System.out.println("Invalid input");
         }
+    }
+
+    public static <T> T interactiveChoice(List<T> values) {
+        if(values == null || values.isEmpty()) {
+            return null;
+        }
+        Scanner scanner = new Scanner(System.in);
+        int index = interactiveChoiceIndex(values);
+        if(index == -1)
+            return null;
+        return  values.get(index);
+    }
+    public static <T> int interactiveChoiceIndex(List<T> values) {
+        int index = -1;
+        if(values == null || values.isEmpty()) {
+            return index;
+        }
+        Scanner scanner = new Scanner(System.in);
+        while(true) {
+            System.out.println("Available messages, use given index to select");
+            for (int i = 0; i < values.size(); i++){
+                System.out.println("[" + i + "] " + values.get(i) );
+            }
+            try {
+                index = scanner.nextInt();
+                if(index >= 0 && index <  values.size())
+                    return  index;
+                else
+                    System.out.println("Index out of range");
+            } catch (Exception e) {
+                System.out.println("Invalid input");
+            }
+        }
+    }
+    public static <T> T interactiveChoice(T[] values) {
+        if(values == null || values.length == 0) {
+            return null;
+        }
+        return interactiveChoice(Arrays.asList(values));
+    }
+    public static <T> int interactiveChoiceIndex(T[] values) {
+        if(values == null || values.length == 0) {
+            return -1;
+        }
+        return interactiveChoiceIndex(Arrays.asList(values));
     }
 }
