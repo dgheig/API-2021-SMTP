@@ -1,68 +1,108 @@
-# API-2021-SMTP
+# SMTP
 
-⚠️ Please clone [our own fork of MockMock server](https://github.com/HEIGVD-Course-API/MockMock) instead of the official one, because we resolved an issues with a dependency (see this [pull request](https://github.com/tweakers/MockMock/pull/8) if you want to have more information).
+This is a multi-threaded server.
 
-## Objectives
-
-In this lab, you will develop a client application (TCP) in Java. This client application will use the Socket API to communicate with an SMTP server. The code that you write will include a **partial implementation of the SMTP protocol**. These are the objectives of the lab:
-
-* Make practical experiments to become familiar with the **SMTP protocol**. After the lab, you should be able to use a command line tool to **communicate with an SMTP server**. You should be able to send well-formed messages to the server, in order to send emails to the address of your choice.
-
-* Understand the notions of **test double** and **mock server**, which are useful when developing and testing a client-server application. During the lab, you will setup and use such a **mock server**.
-
-* Understand what it means to **implement the SMTP protocol** and be able to send e-mail messages, by working directly on top of the Socket API (i.e. you are not allowed to use a SMTP library).
-
-* **See how easy it is to send forged e-mails**, which appear to be sent by certain people but in reality are issued by malicious users.
-
-* **Design a simple object-oriented model** to implement the functional requirements described in the next paragraph.
+We need privilegied permissions to run a server with a port below 1025, in our case port 25.
 
 
-## Functional requirements
 
-Your mission is to develop a client application that automatically plays pranks on a list of victims:
-
-* The user should be able to **define a list of victims** (concretely, you should be able to create a file containing a list of e-mail addresses).
-* The user should be able to **define how many groups of victims should be formed** in a given campaign. In every group of victims, there should be 1 sender and at least 2 recipients (i.e. the minimum size for a group is 3).
-* The user should be able to **define a list of e-mail messages**. When a prank is played on a group of victims, then one of these messages should be selected. **The mail should be sent to all group recipients, from the address of the group sender**. In other words, the recipient victims should be lead to believe that the sender victim has sent them.
-
-## Constraints
-
-- The goal is for you to work at the wire protocol level (with the Socket API). Therefore, you CANNOT use a library that takes care of the protocol details. You have to work with the input and output streams.
-- The program must be configurable: the addresses, groups, messages CANNOT be hard-coded in the program and MUST be managed in config files.
-- You must send **one** e-mail per group, and not one e-mail for every member of every group.
-- There must be at least a simple validation process of the input files that displays errors on the console to describe what's wrong (e.g. an invalid number of groups, an invalid e-mail address that does not contain a '@' character, an invalid format, etc.).
-- We ask you to encode the subject and the body of your e-mails (you don't have to encode the `From` and `To` contents); you can find more information [here](https://ncona.com/2011/06/using-utf-8-characters-on-an-e-mail-subject/).
+## Description
 
 
-## Example
 
-Consider that your program generates a group G1. The group sender is Bob. The group recipients are Alice, Claire and Peter. When the prank is played on group G1, then your program should pick one of the fake messages. It should communicate with an SMTP server, so that Alice, Claire and Peter receive an e-mail, which appears to be sent by Bob.
+## Mockmock
 
-## Teams
+This is a mock server for mailing. It behaves exactly as a real SMTP server would when handling messages and responding, but won't have any external impact as sending the mail to its recipients.
 
-You may work in teams of 2 students.
+Its repository is integrated using git [subtree](https://www.atlassian.com/git/tutorials/git-subtree) for it is simpler to use than git submodules.
 
-## Deliverables
+```bash
+git subtree add -P smtp/mockmock git@github.com:dgheig/MockMock.git master
+```
 
-You will deliver the results of your lab in a GitHub repository. You do not have to fork a specific repo, you can create one from scratch.
+### Changes Made
 
-Your repository should contain both the source code of your Java project and your report. Your report should be a single `README.md` file, located at the root of your repository. The images should be placed in a `figures` directory.
+Some changes where made to use this program
 
-Your report MUST include the following sections:
+* Fixed java version to Java 11 in `pom.xml`
+* Add `Dockerfile` configuration
+* Complete `.gitignore` file
 
-* **A brief description of your project**: if people exploring GitHub find your repo, without a prior knowledge of the API course, they should be able to understand what your repo is all about and whether they should look at it more closely.
+```bash
+mvn package
+```
 
-* **What is MockMock (or any other mock SMTP server you decided to use)?**
 
-* **Instructions for setting up your mock SMTP server (with Docker - which you will learn all about in the next 2 weeks)**. The user who wants to experiment with your tool but does not really want to send pranks immediately should be able to use a mock SMTP server. For people who are not familiar with this concept, explain it to them in simple terms. Explain which mock server you have used and how you have set it up.
 
-* **Clear and simple instructions for configuring your tool and running a prank campaign**. If you do a good job, an external user should be able to clone your repo, edit a couple of files and send a batch of e-mails in less than 10 minutes.
+## Setup Instructions
 
-* **A description of your implementation**: document the key aspects of your code. It is a good idea to start with a **class diagram**. Decide which classes you want to show (focus on the important ones) and describe their responsibilities in text. It is also certainly a good idea to include examples of dialogues between your client and an SMTP server (maybe you also want to include some screenshots here).
+All commands are run from the `smtp/` folder
 
-## References
+1. Compile your programs
 
-* [Here is our fork of MockMock server](https://github.com/HEIGVD-Course-API/MockMock), in which we resolved an issues with a dependency (see this [pull request](https://github.com/tweakers/MockMock/pull/8) if you want to have more information).
-* The [mailtrap](<https://mailtrap.io/>) online service for testing SMTP
-* The [SMTP RFC](<https://tools.ietf.org/html/rfc5321#appendix-D>), and in particular the [example scenario](<https://tools.ietf.org/html/rfc5321#appendix-D>)
-* Testing SMTP with TLS: `openssl s_client -connect smtp.mailtrap.io:2525 -starttls smtp -crlf`
+   * Linux
+
+     ```bash
+     ./compile.sh
+     ```
+
+   * Windows
+
+     ```powershell
+     ./compile.bat
+     ```
+
+     
+
+2. Launch your server MockMock. We use docker to isolate the process and avoid permission issue with port 25
+
+   ```bash
+   docker-compose up -d mockmock  # This will automaticly build the image
+   ```
+
+   Alternatively, we can launch our relay server too
+
+   ```bash
+   docker-compose up -d
+   ```
+
+   The ports are forwarded to localhost:
+
+   * SMTP server (Ports: 25 -> 2525)
+   * Mailing Mock Server: MockMock (Ports: 25 -> 2500, 8282 -> 8282)
+
+3. Display all your containers
+
+   ```bash
+   docker container ls -f label=RES
+   ```
+
+4. Retrieve their ip using the name of the container
+
+   ```bash
+   docker inspect smtp_mockmock_1 -f '{{.NetworkSettings.Networks.smtp_default.IPAddress}}'
+   ```
+
+5. Edit your configuration file
+
+   ```bash
+   {
+       "server": "localhost",
+       "port": 2500,
+       "emailsFile": "tests/emails.txt",
+       "messageFolder": "tests/messages2",
+       "victimCount": 3
+   }
+   ```
+
+6. Launch your client using your configuration file
+
+   ```bash
+   java -jar client/target/SpamCampaign.jar tests/config.json
+   ```
+
+
+
+
+## Implementation
+
