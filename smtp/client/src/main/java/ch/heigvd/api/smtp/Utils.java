@@ -52,16 +52,28 @@ public class Utils {
         }
     }
 
+    /**
+     * Method used to ask user for a value in a list
+     * @param values possible choices
+     * @param text The message displayed to user
+     * @return The value selected
+     */
     public static <T> T interactiveChoice(List<T> values, String text) {
         if(values == null || values.isEmpty()) {
             return null;
         }
-        Scanner scanner = new Scanner(System.in);
         int index = interactiveChoiceIndex(values, text);
         if(index == -1)
             return null;
         return  values.get(index);
     }
+
+    /**
+     * Method used to ask user for a value in a list
+     * @param values possible choices
+     * @param text The message displayed to user
+     * @return The index of the selected value
+     */
     public static <T> int interactiveChoiceIndex(List<T> values, String text) {
         int index = -1;
         if(values == null || values.isEmpty()) {
@@ -86,12 +98,26 @@ public class Utils {
             }
         }
     }
+    
+    /**
+     * Method used to ask user for a value in a list
+     * @param values possible choices
+     * @param text The message displayed to user
+     * @return The value selected
+     */
     public static <T> T interactiveChoice(T[] values, String text) {
         if(values == null || values.length == 0) {
             return null;
         }
         return interactiveChoice(Arrays.asList(values), text);
     }
+
+    /**
+     * Method used to ask user for a value in a list
+     * @param values possible choices
+     * @param text The message displayed to user
+     * @return The index of the selected value
+     */
     public static <T> int interactiveChoiceIndex(T[] values, String text) {
         if(values == null || values.length == 0) {
             return -1;
