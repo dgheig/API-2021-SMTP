@@ -52,24 +52,26 @@ public class Utils {
         }
     }
 
-    public static <T> T interactiveChoice(List<T> values) {
+    public static <T> T interactiveChoice(List<T> values, String text) {
         if(values == null || values.isEmpty()) {
             return null;
         }
         Scanner scanner = new Scanner(System.in);
-        int index = interactiveChoiceIndex(values);
+        int index = interactiveChoiceIndex(values, text);
         if(index == -1)
             return null;
         return  values.get(index);
     }
-    public static <T> int interactiveChoiceIndex(List<T> values) {
+    public static <T> int interactiveChoiceIndex(List<T> values, String text) {
         int index = -1;
         if(values == null || values.isEmpty()) {
             return index;
         }
         Scanner scanner = new Scanner(System.in);
         while(true) {
-            System.out.println("Available messages, use given index to select");
+            if(text != null)
+                System.out.println(text);
+            System.out.println("Use given index to select which one to use");
             for (int i = 0; i < values.size(); i++){
                 System.out.println("[" + i + "] " + values.get(i) );
             }
@@ -84,16 +86,16 @@ public class Utils {
             }
         }
     }
-    public static <T> T interactiveChoice(T[] values) {
+    public static <T> T interactiveChoice(T[] values, String text) {
         if(values == null || values.length == 0) {
             return null;
         }
-        return interactiveChoice(Arrays.asList(values));
+        return interactiveChoice(Arrays.asList(values), text);
     }
-    public static <T> int interactiveChoiceIndex(T[] values) {
+    public static <T> int interactiveChoiceIndex(T[] values, String text) {
         if(values == null || values.length == 0) {
             return -1;
         }
-        return interactiveChoiceIndex(Arrays.asList(values));
+        return interactiveChoiceIndex(Arrays.asList(values), text);
     }
 }

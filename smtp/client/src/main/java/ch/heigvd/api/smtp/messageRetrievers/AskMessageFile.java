@@ -72,7 +72,10 @@ public class AskMessageFile implements MessageRetriever{
      */
     private List<String> getMessageAsUtf8() {
         File files[] = getMessageFiles();
-        File file = Utils.interactiveChoice(files);
+        File file = Utils.interactiveChoice(
+                files,
+                "Choose the message file"
+        );
         if(file == null) {
             return null;
         }
