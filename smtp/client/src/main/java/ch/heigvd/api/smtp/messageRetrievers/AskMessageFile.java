@@ -47,12 +47,17 @@ public class AskMessageFile implements MessageRetriever{
         File files[] = messageFolder.listFiles();
 
         if (files == null){
-            System.out.println("CAMPAIGN MANAGER::getMessages() - Directory does not exist or cannot be read");
+            System.out.println(
+                    "CAMPAIGN MANAGER::getMessages() - Directory '" +
+                    messageFolder.getAbsolutePath() +
+                    "' does not exist or cannot be read"
+            );
             return null;
         }
 
         if (files.length == 0){
-            System.out.println("CAMPAIGN MANAGER::getMessages() - No files found in message folder");
+            System.out.println("CAMPAIGN MANAGER::getMessages() - No files found in message folder " +
+                    messageFolder.getAbsolutePath());
             return null;
         }
         return files;
@@ -65,6 +70,9 @@ public class AskMessageFile implements MessageRetriever{
      */
     private File askFile() {
         File files[] = getMessageFiles();
+        if(files == null) {
+            return null;
+        }
         Scanner scanner = new Scanner(System.in);
         int index = -1;
         while(true) {
@@ -90,6 +98,9 @@ public class AskMessageFile implements MessageRetriever{
      */
     private List<String> getMessageAsUtf8() {
         File file = askFile();
+        if(file == null) {
+            return null;
+        }
         List<String> data = new ArrayList<>();
         String line = null;
 

@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 /**
  * Class extending the PrintWriter class
- * This class is used to add a custom line ending to each written line
+ * This class is used to use the CRLF line feed when using println function
  */
 public class CRLFPrintWriter extends PrintWriter {
     /**

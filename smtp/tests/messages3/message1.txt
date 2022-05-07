@@ -1,5 +1,4 @@
 Subject: https://www.w3.org/2001/06/utf-8-test/UTF-8-demo.html
-Content-Type: text/html; charset=UTF-8
 
 Original by Markus Kuhn, adapted for HTML by Martin Dürst.
 

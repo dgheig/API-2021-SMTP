@@ -12,6 +12,9 @@ import picocli.CommandLine.Parameters;
 import java.io.File;
 import java.util.concurrent.Callable;
 
+/**
+ * The main class responsible for setting up the application.
+ */
 @Command(name = "SMTPClientAttack", mixinStandardHelpOptions = true, version = "SMTPClientAttack 1.0", description = "Spam your friends")
 public class Main implements Callable<Integer> {
 
@@ -20,12 +23,18 @@ public class Main implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception { // your business logic goes here...
-        Config config = Config.get(configFile);
-        CampaignManager cm = new CampaignManager(
-                new MinimalEmailsGrouping(3),
-                new TxtFileParsor(config.getEmailsFile()),
-                new AskMessageFile(config.getMessageFolder()));
-        cm.start(config.getServer(), config.getPort());
+        try {
+            Config config = Config.get(configFile);
+            CampaignManager cm = new CampaignManager(
+                    new MinimalEmailsGrouping(3),
+                    new TxtFileParsor(config.getEmailsFile()),
+                    new AskMessageFile(config.getMessageFolder()));
+            cm.start(config.getServer(), config.getPort());
+        } catch (Exception e) {
+            System.out.println("Something went wrong");
+            System.out.println(e.getMessage());
+            return 1;
+        }
         return 0;
     }
 

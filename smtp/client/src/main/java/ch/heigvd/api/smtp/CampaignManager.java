@@ -81,7 +81,7 @@ public class CampaignManager {
      *         as a list of email addresses
      * @throws Exception Custom exception if there was an error while creating mailing groups
      */
-    public List<List<String>> getMailingGroups() throws Exception {
+    private List<List<String>> getMailingGroups() throws Exception {
         List<String> emails = emailsRetriever.getEmails();
 
         // Validate that all emails in file are valid
@@ -139,6 +139,10 @@ public class CampaignManager {
             // For each mailing group, create sender, recipients and message
             for (List<String> recipients : groups) {
                 List<String> message = messageRetriever.getMessage();
+                if(message == null) {
+                    System.out.println("An error occured when retrieving the message");
+                    continue;
+                }
                 int index = new Random().nextInt(recipients.size());
                 String sender = recipients.remove(index);
                 // Send the message

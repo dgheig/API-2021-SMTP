@@ -8,9 +8,18 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Utilities to communicate with a SMTP server
+ */
 public class Client {
     private final static Logger LOG = Logger.getLogger(Client.class.getName());
 
+    /**
+     * The fonction takes the content of the header (without the header declaration itself)
+     * and encode it for SMTP UTF-8 support
+     * @param headerText the content of the header
+     * @return the content encoded
+     */
     public static String UTFHeader(String headerText) {
         if (headerText == null)
             return null;
@@ -18,6 +27,11 @@ public class Client {
         return "=?utf-8?B?" + encodedText + "?=";
     }
 
+    /**
+     * Takes the whole data and makes it SMTP UTF-8 compatible
+     * @param data line by line representation of the DATA command content (without the closing dot)
+     * @return the data with edited header to support UTF-8 on SMTP protocol
+     */
     public static List<String> UTFData(List<String> data) {
         List<String> result = new ArrayList<>();
         boolean hasContentTypeHeader = false;
@@ -224,7 +238,7 @@ public class Client {
      * @throws Exception
      *             if an unpexpected line was read from input
      */
-    public static String checkOptions(BufferedReader input) throws Exception {
+    private static String checkOptions(BufferedReader input) throws Exception {
         String line = null;
 
         // Deal with options

@@ -8,6 +8,15 @@ We need privilegied permissions to run a server with a port below 1025, in our c
 
 ## Description
 
+This project goals is to practice implementing a RFC. In this case, the [SMTP RFC 5321](https://datatracker.ietf.org/doc/html/rfc5321).
+
+This repository implements a minimal SMTP Client. The client will, given a configuration file, send prank emails by SMTP: Groups are formed from a email list. For each group, on email will be used as the apparent sender and the others as the receivers of the prank message.
+
+This repository also includes:
+
+* A minimal SMTP MTA server
+* The MockMock SMTP mocking server (integrated in this project using `git subtree`)
+
 
 
 ## Mockmock
@@ -91,10 +100,9 @@ All commands are run from the `smtp/` folder
        "port": 2500,
        "emailsFile": "tests/emails.txt",
        "messageFolder": "tests/messages2",
-       "victimCount": 3
    }
    ```
-
+   
 6. Launch your client using your configuration file
 
    ```bash
@@ -106,3 +114,12 @@ All commands are run from the `smtp/` folder
 
 ## Implementation
 
+
+
+### Classes & Interfaces
+
+* **CampaignManager**: This is the class that will orchestrate the whole  prank. It supervises all other classes and the overall behaviour
+* **Client**: The class responsible for sending the email
+* **_MessageRetriever_**: Interface defining how the message to be sent will be retrieved for each group
+* **_EmailsRetriever_**: Interface defining how the email list will be retrieved.
+* **_EmailsGrouping_**: Interface defining how the emails are grouped together 
