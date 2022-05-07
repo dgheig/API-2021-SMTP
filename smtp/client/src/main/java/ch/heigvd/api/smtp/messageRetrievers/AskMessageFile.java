@@ -1,5 +1,7 @@
 package ch.heigvd.api.smtp.messageRetrievers;
 
+import ch.heigvd.api.smtp.Utils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -65,39 +67,15 @@ public class AskMessageFile implements MessageRetriever{
     }
 
     /**
-     * Method used to prompt used to select a message among the available messages
-     * @return The File object of the selected message
-     */
-    private File askFile() {
-        File files[] = getMessageFiles();
-        if(files == null) {
-            return null;
-        }
-        Scanner scanner = new Scanner(System.in);
-        int index = -1;
-        while(true) {
-            System.out.println("Available messages, use given index to select");
-            for (int i = 0; i < files.length; i++){
-                System.out.println("[" + i + "] " + files[i] );
-            }
-            try {
-                index = scanner.nextInt();
-                if(index >= 0 && index < files.length)
-                    return  files[index];
-                else
-                    System.out.println("Index out of range");
-            } catch (Exception e) {
-                System.out.println("Invalid input");
-            }
-        }
-    }
-
-    /**
      * Method used to getMessageAsUtf8 get the contents of a message file as UTF-8 string
      * @return a list of strings where each item is a line of the message
      */
     private List<String> getMessageAsUtf8() {
-        File file = askFile();
+        File files[] = getMessageFiles();
+        File file = Utils.interactiveChoice(
+                files,
+                "Choose the message file"
+        );
         if(file == null) {
             return null;
         }

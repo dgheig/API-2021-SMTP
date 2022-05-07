@@ -6,6 +6,8 @@ import ch.heigvd.api.smtp.emailsRetrievers.EmailsRetriever;
 import ch.heigvd.api.smtp.emailsRetrievers.TxtFileParsor;
 import ch.heigvd.api.smtp.messageRetrievers.AskMessageFile;
 import ch.heigvd.api.smtp.messageRetrievers.MessageRetriever;
+import ch.heigvd.api.smtp.senderSelectors.RandomSenderSelector;
+import ch.heigvd.api.smtp.senderSelectors.SenderSelector;
 
 import java.util.List;
 import java.util.Random;
@@ -18,7 +20,28 @@ public class CampaignManager {
     private final EmailsGrouping emailsGrouping;
     private final EmailsRetriever emailsRetriever;
     private final MessageRetriever messageRetriever;
+    private final SenderSelector senderSelector;
 
+    /**
+     * The constructor to use to define a custom number of users per group
+     * @param emailsGrouping an instance of a class implementing the EmailsGrouping interface
+     * @param emailsRetriever an instance of a class implementing the EmailsRetriever interface
+     * @param messageRetriever an instance of a class implementing the MessageRetriever interface
+     * @param senderSelector an instance of a class implementing the SenderSelector interface
+     * @param minGroupMembers the minimum number of email addresses composing a group
+     */
+    public CampaignManager(
+            EmailsGrouping emailsGrouping,
+            EmailsRetriever emailsRetriever,
+            MessageRetriever messageRetriever,
+            SenderSelector senderSelector,
+            int minGroupMembers) {
+        this.emailsGrouping = emailsGrouping;
+        this.emailsRetriever = emailsRetriever;
+        this.messageRetriever = messageRetriever;
+        this.senderSelector = senderSelector;
+        this.MIN_GROUP_MEMBERS = minGroupMembers;
+    }
     /**
      * The constructor to use to define a custom number of users per group
      * @param emailsGrouping an instance of a class implementing the EmailsGrouping interface
@@ -31,10 +54,7 @@ public class CampaignManager {
             EmailsRetriever emailsRetriever,
             MessageRetriever messageRetriever,
             int minGroupMembers) {
-        this.emailsGrouping = emailsGrouping;
-        this.emailsRetriever = emailsRetriever;
-        this.messageRetriever = messageRetriever;
-        this.MIN_GROUP_MEMBERS = minGroupMembers;
+        this(emailsGrouping, emailsRetriever, messageRetriever, new RandomSenderSelector(), minGroupMembers);
     }
 
     /**
@@ -52,6 +72,27 @@ public class CampaignManager {
                 emailsRetriever,
                 messageRetriever,
                 3);
+    }
+    /**
+     * Constructor needing all the behaviour controlers
+     * @param emailsGrouping an instance of a class implementing the EmailsGrouping interface
+     * @param emailsRetriever an instance of a class implementing the EmailsRetriever interface
+     * @param messageRetriever an instance of a class implementing the MessageRetriever interface
+     * @param senderSelector an instance of a class implementing the SenderSelector interface
+     */
+    public CampaignManager(
+            EmailsGrouping emailsGrouping,
+            EmailsRetriever emailsRetriever,
+            MessageRetriever messageRetriever,
+            SenderSelector senderSelector
+    ) {
+        this(
+                emailsGrouping,
+                emailsRetriever,
+                messageRetriever,
+                senderSelector,
+                3
+        );
     }
 
     /**
@@ -143,8 +184,7 @@ public class CampaignManager {
                     System.out.println("An error occured when retrieving the message");
                     continue;
                 }
-                int index = new Random().nextInt(recipients.size());
-                String sender = recipients.remove(index);
+                String sender = senderSelector.getSender(recipients);
                 // Send the message
                 Client.sendEmails(server, port, sender, recipients, message);
             }
