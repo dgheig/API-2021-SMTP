@@ -1,5 +1,7 @@
-## RES/API - Labo 4 - SMTP
+# RES/API - Labo 4 - SMTP
+
 Authors: Jean Gachet, David Gallay, Yanick Thomann
+
 ---
 
 ## Project Description
@@ -135,6 +137,8 @@ Of course, if running a script is too simple for you, you can also setup the env
 * **_MessageRetriever_**: Interface defining how the message to be sent will be retrieved for each group
 * **_EmailsRetriever_**: Interface defining how the email list will be retrieved.
 * **_EmailsGrouping_**: Interface defining how the emails are grouped together 
+* **_MinimalEmailsGrouping_,_TxtFileParsor_,_AskMessageFile_, _RandomMessage_** are all classes implementing their respectives interfaces. These classes are used in our projet, but feel free to add more if you'd like.
+
 
 ## Execution example
 ![](figures/sampleExecution.png)
