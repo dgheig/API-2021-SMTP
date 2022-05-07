@@ -114,10 +114,10 @@ public class CampaignManager {
                     "Continue using " + maxGroupsPossible + " groups ?")) {
                 return null;
             }
-
+            numberOfGroups = maxGroupsPossible;
         }
         // Build the return object from emailsGrouping implementing class
-        List<List<String>> groups = emailsGrouping.group(emails);
+        List<List<String>> groups = emailsGrouping.group(emails, numberOfGroups);
 
         return groups;
 

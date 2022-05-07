@@ -15,7 +15,8 @@ public class MinimalEmailsGrouping implements EmailsGrouping {
     }
 
     @Override
-    public List<List<String>> group(List<String> emails) {
+    public List<List<String>> group(List<String> emails, int nbOfGroups) {
+        int nbPerGroup = emails.size() / nbOfGroups;
         List<List<String>> groups = new ArrayList<>();
 
         int count = 0;
