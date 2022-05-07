@@ -2,6 +2,8 @@ package ch.heigvd.api.smtp;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class extending the PrintWriter class
@@ -14,6 +16,12 @@ public class CRLFPrintWriter extends PrintWriter {
      */
     CRLFPrintWriter(OutputStream out) {
         super(out);
+    }
+    CRLFPrintWriter(Writer out) {
+        super(out);
+    }
+    CRLFPrintWriter(Writer out, boolean autoFlush) {
+        super(out, autoFlush);
     }
 
     /**

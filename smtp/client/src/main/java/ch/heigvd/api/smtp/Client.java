@@ -4,6 +4,7 @@ import jdk.jshell.execution.Util;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -141,10 +142,18 @@ public class Client {
         try (
                 Socket socket = new Socket(server, port);
                 InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();) {
+                OutputStream outputStream = socket.getOutputStream()) {
             LOG.info("Sending to server: " + server);
             BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-            PrintWriter out = new CRLFPrintWriter(outputStream);
+
+            PrintWriter out = new CRLFPrintWriter(
+                    new BufferedWriter(
+                        new OutputStreamWriter(
+                            outputStream,
+                            StandardCharsets.UTF_8.toString()
+                        )
+                    )
+            );
             String line = null;
 
             readLineOrThrow(in, "220"); // Server announcement
