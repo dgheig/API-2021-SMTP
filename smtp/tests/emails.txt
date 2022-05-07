@@ -1,3 +1,4 @@
+Juergen.Ehrensberger@heig-vd.ch
 yanick.thomann@heig-vd.ch
 jean.gachet@heig-vd.ch
 david.gallay@heig-vd.ch
@@ -5,3 +6,5 @@ simon.ackermann@heig-vd.ch
 noah.boegli@heig-vd.ch
 emmanuelle.comte@heig-vd.ch
 hugo.mendes@heig-vd.ch
+fabien.terrani@heig-vd.ch
+david.oliveira@heig-vd.ch
