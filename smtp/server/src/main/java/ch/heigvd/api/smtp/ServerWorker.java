@@ -146,10 +146,12 @@ public class ServerWorker implements Runnable {
 
     private void EHLO() {
         clientNAme = Utils.substring(line, 5);
-        if (clientNAme != null) {
-            out.println(server.getNAME() + " greets " + clientNAme);
-            out.flush();
-        }
+        /*
+         * if (clientNAme != null) {
+         * out.println("221 " + server.getNAME() + " greets " + clientNAme);
+         * out.flush();
+         * } // Send error otherwise if no name?
+         */
         sendOptions();
     }
 
@@ -190,6 +192,8 @@ public class ServerWorker implements Runnable {
             out.flush();
             return;
         }
+        out.println("354 End data with <CR><LF>.<CR><LF>");
+        out.flush();
         StringBuilder body = new StringBuilder();
         while (true) {
             line = in.readLine();

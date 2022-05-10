@@ -102,7 +102,7 @@ Of course, if running a script is too simple for you, you can also setup the env
    docker container ls -f label=RES
    ```
 
-4. Retrieve their ip using the name of the container
+4. Retrieve their ip using the name of the container (Nb: use `-` instead of `_` on windows)
 
    ```bash
    docker inspect smtp_mockmock_1 -f '{{.NetworkSettings.Networks.smtp_default.IPAddress}}'

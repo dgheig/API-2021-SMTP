@@ -16,9 +16,12 @@ public class Client {
     private final static Logger LOG = Logger.getLogger(Client.class.getName());
 
     /**
-     * The fonction takes the content of the header (without the header declaration itself)
+     * The fonction takes the content of the header (without the header declaration
+     * itself)
      * and encode it for SMTP UTF-8 support
-     * @param headerText the content of the header
+     * 
+     * @param headerText
+     *            the content of the header
      * @return the content encoded
      */
     public static String UTFHeader(String headerText) {
@@ -30,16 +33,19 @@ public class Client {
 
     /**
      * Takes the whole data and makes it SMTP UTF-8 compatible
-     * @param data line by line representation of the DATA command content (without the closing dot)
+     * 
+     * @param data
+     *            line by line representation of the DATA command content (without
+     *            the closing dot)
      * @return the data with edited header to support UTF-8 on SMTP protocol
      */
     public static List<String> UTFData(List<String> data) {
         List<String> result = new ArrayList<>();
         boolean hasContentTypeHeader = false;
         Iterator<String> it = data.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             String line = it.next();
-            if(line.startsWith("From:") || line.startsWith("To:")) {
+            if (line.startsWith("From:") || line.startsWith("To:")) {
                 // Do nothing
             } else if (line.startsWith("Subject:")) {
                 line = "Subject:" + UTFHeader(Utils.substring(line, ("Subject:").length()));
@@ -49,7 +55,7 @@ public class Client {
                 if (!hasContentTypeHeader) {
                     result.add("Content-Type: charset=UTF-8");
                 }
-                if(!line.equals("")) {
+                if (!line.equals("")) {
                     result.add("");
                 }
                 result.add(line);
@@ -58,7 +64,7 @@ public class Client {
             result.add(line);
         }
 
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             result.add(it.next());
         }
         return result;
@@ -66,7 +72,7 @@ public class Client {
 
     /**
      * Method used to read a line from a bufferedReader
-     * 
+     *
      * @param input
      *            the BufferedReader from which to read
      * @return the string read from input
@@ -84,7 +90,7 @@ public class Client {
     /**
      * Method used to read a line from a BufferedReader looking for a specific line
      * start string
-     * 
+     *
      * @param input
      *            the BufferedReader from which to read
      * @param start
@@ -106,7 +112,7 @@ public class Client {
 
     /**
      * Method used to send a message with the data as string
-     * 
+     *
      * @param server
      *            the ip address of the server
      * @param port
@@ -125,7 +131,7 @@ public class Client {
 
     /**
      * Method used to send a message with the data as list of strings
-     * 
+     *
      * @param server
      *            the ip address of the server
      * @param port
@@ -148,18 +154,17 @@ public class Client {
 
             PrintWriter out = new CRLFPrintWriter(
                     new BufferedWriter(
-                        new OutputStreamWriter(
-                            outputStream,
-                            StandardCharsets.UTF_8.toString()
-                        )
-                    )
-            );
+                            new OutputStreamWriter(
+                                    outputStream,
+                                    StandardCharsets.UTF_8.toString())));
             String line = null;
 
             readLineOrThrow(in, "220"); // Server announcement
 
             out.println("EHLO SERVER");
             out.flush();
+
+            // Sometimes we receives a greeting?
 
             // Deal with options
             checkOptions(in);
@@ -197,7 +202,7 @@ public class Client {
 
     /**
      * Method used to send a separate mail per recipient
-     * 
+     *
      * @param server
      *            the ip address of the server
      * @param port
@@ -216,7 +221,7 @@ public class Client {
 
     /**
      * Method used to send a separate mail per recipient
-     * 
+     *
      * @param server
      *            the ip address of the server
      * @param port
@@ -240,7 +245,7 @@ public class Client {
 
     /**
      * Method used to check server options
-     * 
+     *
      * @param input
      *            the BufferedReader we want to read from
      * @return the last line read from input
